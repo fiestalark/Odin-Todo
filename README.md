@@ -5,14 +5,16 @@
 ## Implementation To Do List
 
 - Projects / separate lists of todos
-- Fields: title, description, dueDate, priority, notes, checklist
+- Fields: notes, checklist
 - View all projects
 - View all todos in a project
 - Expand single to do to see/edit details
-- Delete todo
-- Add todo
 - Add project
 - To do by calendar
+- Add filter to top for quadrants
+- Add page header
+
+
 Add error handling for invalid inputs
 Add validation for project names (e.g., prevent duplicates)
 Consider adding date validation for todo due dates

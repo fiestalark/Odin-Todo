@@ -6,41 +6,85 @@
     <title>Odin To Do</title>
 </head>
 <body>
-  <div class="todo-container">
-    <div class="add-button" id="add-btn">+</div>
-
-    <div class="container">
-      <div class="matrix">
-        <div class="quadrant urgent-important">
-          <div class="title">Urgent & Important</div>
-          <div class="description">Do First</div>
-          <ul class="todo-list" id="quadrant1"></ul>
+  <div class="layout-container">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <!-- Main navigation items -->
+        <div class="nav-item nav-home">
+            <span class="nav-title">Home</span>
+            <span class="badge" id="home-badge">8</span>
         </div>
-        <div class="quadrant not-urgent-important">
-          <div class="title">Not Urgent & Important</div>
-          <div class="description">Schedule</div>
-          <ul class="todo-list" id="quadrant2"></ul>
+        
+        <div class="nav-item">
+            <span class="nav-title">Today</span>
+            <span class="badge" id="today-badge">1</span>
         </div>
-        <div class="quadrant urgent-not-important">
-          <div class="title">Urgent & Not Important</div>
-          <div class="description">Delegate</div>
-          <ul class="todo-list" id="quadrant3"></ul>
+        
+        <div class="nav-item">
+            <span class="nav-title">Week</span>
+            <span class="badge" id="week-badge">1</span>
         </div>
-        <div class="quadrant not-urgent-not-important">
-          <div class="title">Not Urgent & Not Important</div>
-          <div class="description">Eliminate</div>
-          <ul id="quadrant4"></ul>
-        </div>
-        <div class="quadrant fifth-quadrant">
-          <div class="title">Additional Tasks</div>
-          <div class="description">Tasks that need review or categorization</div>
-          <ul class="todo-list" id="quadrant5"></ul>
-        </div>
-      </div>
-    </div>
     
+        <!-- Projects section -->
+        <div class="projects-section">
+            <div class="nav-item">
+                <span class="nav-title">Projects</span>
+            </div>
+            
+            <!-- Project items container - to be populated by JavaScript -->
+            <div class="project-items" id="project-list">
+                <!-- Example structure of a project item -->
+                <div class="project-item">
+                    <span class="nav-title">Gym</span>
+                    <span class="badge">3</span>
+                </div>
+                <div class="project-item">
+                    <span class="nav-title">Study</span>
+                    <span class="badge">1</span>
+                </div>
+                <div class="project-item">
+                    <span class="nav-title">Work</span>
+                    <span class="badge">1</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+        <div class="add-button" id="add-btn">+</div>
+        <!-- Add any other sidebar content here -->
+    </aside>
     
-  </div>
+    <main class="main-content">
+        <div class="todo-container">
+            <div class="matrix">
+                <div class="quadrant urgent-important">
+                    <div class="title">Urgent & Important</div>
+                    <div class="description">Do First</div>
+                    <ul class="todo-items" id="quadrant1"></ul>
+                </div>
+                <div class="quadrant not-urgent-important">
+                    <div class="title">Not Urgent & Important</div>
+                    <div class="description">Schedule</div>
+                    <ul class="todo-items" id="quadrant2"></ul>
+                </div>
+                <div class="quadrant urgent-not-important">
+                    <div class="title">Urgent & Not Important</div>
+                    <div class="description">Delegate</div>
+                    <ul class="todo-items" id="quadrant3"></ul>
+                </div>
+                <div class="quadrant not-urgent-not-important">
+                    <div class="title">Not Urgent & Not Important</div>
+                    <div class="description">Eliminate</div>
+                    <ul class="todo-items" id="quadrant4"></ul>
+                </div>
+                <div class="quadrant fifth-quadrant">
+                    <div class="title">Additional Tasks</div>
+                    <div class="description">Tasks that need review or categorization</div>
+                    <ul class="todo-items" id="quadrant5"></ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 
   <!-- Single Reusable Modal -->
 <div class="modal" id="todo-modal">
@@ -78,22 +122,22 @@
       <fieldset class="option-group">
         <legend>Importance</legend>
         <div class="radio-options">
-          <input type="radio" name="importance" id="importance-low" value="low">
-          <button type="button" class="radio-btn low" data-for="importance-low">LOW</button>
+          <input type="radio" id="importance-low" name="importance" value="low">
+          <label for="importance-low" class="btn low">Low</label>
           
-          <input type="radio" name="importance" id="importance-high" value="high">
-          <button type="button" class="radio-btn high" data-for="importance-high">HIGH</button>
+          <input type="radio" id="importance-high" name="importance" value="high">
+          <label for="importance-high" class="btn high">High</label>
         </div>
       </fieldset>
-
+      
       <fieldset class="option-group">
         <legend>Urgency</legend>
         <div class="radio-options">
-          <input type="radio" name="urgency" id="urgency-low" value="low">
-          <button type="button" class="radio-btn low" data-for="urgency-low">LOW</button>
+          <input type="radio" id="urgency-low" name="urgency" value="low">
+          <label for="urgency-low" class="btn low">Low</label>
           
-          <input type="radio" name="urgency" id="urgency-high" value="high">
-          <button type="button" class="radio-btn high" data-for="urgency-high">HIGH</button>
+          <input type="radio" id="urgency-high" name="urgency" value="high">
+          <label for="urgency-high" class="btn high">High</label>
         </div>
       </fieldset>
 
