@@ -11,41 +11,49 @@ export class UiManager {
     }
 
     createTodoElement(todo) {
-            console.log(todo);
-            const li = document.createElement('li');
-            li.dataset.id = todo.id;
+        console.log(todo);
+        const li = document.createElement('li');
+        li.dataset.id = todo.id;
 
-            // Create checkbox
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = todo.completed;
-            checkbox.classList.add('toggle-checkbox');
+        // Create checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.classList.add('toggle-checkbox');
 
-            // todo text
-            const todoText = document.createElement('span');
-            todoText.textContent = todo.title;
-            todoText.classList.add('todo-text');
-            if (todo.completed) {
-                todoText.classList.add('completed');
-            }
+        // todo text
+        const todoText = document.createElement('span');
+        todoText.textContent = todo.title;
+        todoText.classList.add('todo-text');
+        if (todo.completed) {
+            todoText.classList.add('completed');
+        }
 
-            // Edit Icon
-            const editIcon = document.createElement('button');
-            editIcon.textContent = 'Edit';
-            editIcon.classList.add('edit-icon');
+        // Project
 
-            // Delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.classList.add('delete-btn');
+        // Importance & urgency
+        const importance = document.createElement('span');
+        importance.textContent = `Importance: ${todo.importance}`;
+        const urgency = document.createElement('span');
+        urgency.textContent = `Urgency: ${todo.urgency}`;
 
-            li.append(checkbox, todoText, editIcon, deleteBtn);
-            return li;
+        // Edit Icon
+        const editIcon = document.createElement('button');
+        editIcon.textContent = 'Edit';
+        editIcon.classList.add('edit-icon');
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.classList.add('delete-btn');
+
+        li.append(checkbox, todoText, importance, urgency, editIcon, deleteBtn);
+        return li;
     }
 
     addTodoToDisplay(todo) {
         const todoElement = this.createTodoElement(todo);
-        document.getElementById('todoList').appendChild(todoElement);
+        document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
     }
 
     toggleTodoComplete(id) {
@@ -60,29 +68,24 @@ export class UiManager {
         todoElement.remove();
     }
 
-    showCreateTodoModal() {
-        document.getElementById('create-todo-modal').classList.add('show');
+    showTodoModal() {
+        document.getElementById('todo-modal').classList.add('show');
         document.getElementById('modal-backdrop').classList.add('show');
     }
 
-    hideCreateTodoModal() {
-        document.getElementById('create-todo-modal').classList.remove('show');
+    hideTodoModal() {
+        document.getElementById('todo-modal').classList.remove('show');
         document.getElementById('modal-backdrop').classList.remove('show');
     }
 
     showEditModal(id) {
-        const editModal = document.getElementById('edit-modal');
+        const editModal = document.getElementById('todo-modal');
         editModal.classList.add('show');
         document.getElementById('modal-backdrop').classList.add('show');
         const todoToEdit = this.todoList.getTodo(id);
-        editModal.querySelector('#edit-todo-title').value = todoToEdit.title;
+        editModal.querySelector('#todoForm #title').value = todoToEdit.title;
     }
 
-    closeEditModal() {
-        const editModal = document.getElementById('edit-modal');
-        editModal.classList.remove('show');
-        document.getElementById('modal-backdrop').classList.remove('show');
-    }
     saveEdit() {
 
     }
@@ -92,50 +95,53 @@ export class UiManager {
 
         todoForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            // Get title, priority, urgency
-            const title = todoForm.querySelector('#title');
-            const priority = todoForm.querySelector('input[name="priority"]:checked');
-            const urgency = todoForm.querySelector('input[name="urgency"]:checked');
-            
-            if (title.value.trim()) {
-                const todoData = {
-                    title: title.value
-                };
+            // Get title, importance, urgency
+            const titleElement = todoForm.querySelector('#title');
+            const title = titleElement.value.trim();
+            const details = todoForm.querySelector('#details')?.value || '';
+            const project = todoForm.querySelector('#project')?.value || 'Home';
+            const dueDate = todoForm.querySelector('#due-date')?.value || '';
+            const importance = todoForm.querySelector('input[name="importance"]:checked')?.value || '';
+            const urgency = todoForm.querySelector('input[name="urgency"]:checked')?.value || '';
 
-                if (priority) {
-                    todoData.priority = priority.value;
-                }
-                if (urgency) {
-                    todoData.urgency = urgency.value;
-                }
-
-                const newTodo = this.todoList.addTodo(todoData);
-                this.addTodoToDisplay(newTodo);
-                title.value = '';
-                todoForm.querySelectorAll('input[type="radio"]:checked').forEach(input => input.checked = false);
-                this.hideCreateTodoModal();
+            if (!title) {
+                console.error('Title is required!');
+                return;
             }
+
+            const todoData = { title, details, project, dueDate, importance, urgency };
+
+            const newTodo = this.todoList.addTodo(todoData);
+            this.addTodoToDisplay(newTodo);
+            titleElement.value = '';
+            todoForm.querySelectorAll('input[type="radio"]:checked').forEach(input => input.checked = false);
+            this.hideTodoModal();
         });
 
-        document.getElementById('todoList').addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-btn')) {
-                const id = e.target.parentElement.dataset.id;
-                this.todoList.deleteTodo(id);
-                this.deleteTodoFromDisplay(id);
-            }
-            if (e.target.classList.contains('toggle-checkbox')) {
-                const id = e.target.parentElement.dataset.id;
-                this.todoList.toggleComplete(id);
-                this.toggleTodoComplete(id);
-            }
-            if (e.target.classList.contains('edit-icon')) {
-                const id = e.target.parentElement.dataset.id;
-                this.showEditModal(id);
-            }
+        document.querySelectorAll('.todo-list').forEach(list => {
+            list.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-btn')) {
+                    const id = e.target.parentElement.dataset.id;
+                    this.todoList.deleteTodo(id);
+                    this.deleteTodoFromDisplay(id);
+                }
+                if (e.target.classList.contains('toggle-checkbox')) {
+                    const id = e.target.parentElement.dataset.id;
+                    this.todoList.toggleComplete(id);
+                    this.toggleTodoComplete(id);
+                }
+                if (e.target.classList.contains('edit-icon')) {
+                    const id = e.target.parentElement.dataset.id;
+                    this.showEditModal(id);
+                }
+            });
         });
 
         document.getElementById('add-btn').addEventListener('click', (e) => {
-            this.showCreateTodoModal();
+            this.showTodoModal();
+        })
+        document.getElementById('close-todo-modal').addEventListener('click', (e) => {
+            this.hideTodoModal();
         })
 
         document.getElementById('edit-modal').addEventListener('click', (e) => {
