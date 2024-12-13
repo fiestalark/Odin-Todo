@@ -7,11 +7,59 @@
 </head>
 <body>
   <div class="todo-container">
-    <form id="todoForm">
-      <input type="text" id="todoInput">
-      <button type="submit" id="add-new-todo">Add Todo</button>
-    </form>
-  <ul id="todoList"></ul>
+    <div class="add-button" id="add-btn">+</div>
+
+    <div class="modal" id="create-todo-modal">
+      <div class="modal-content">
+        <form id="todoForm">
+          <label for="">Title:</label>
+          <input type="text" id="title">
+    
+          <!-- Priority group -->
+          <fieldset>
+            <legend>Priority</legend>
+            <input type="radio" name="priority" id ="low" value="low">
+            <label for="low">Low</label>
+    
+            <input type="radio" name="priority" id ="high" value="high">
+            <label for="high">High</label>
+          </fieldset>
+    
+          <!-- Urgency group -->
+          <fieldset>
+            <legend>Urgency</legend>
+            <input type="radio" name="urgency" id ="low" value="low">
+            <label for="low">Low</label>
+    
+            <input type="radio" name="urgency" id ="high" value="high">
+            <label for="high">High</label>
+          </fieldset>
+    
+          <button type="submit" id="add-new-todo">Add Todo</button>
+        </form>
+      </div>
+
+    </div>
+    
+    <ul id="todoList"></ul>
   </div>
+
+
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <!-- Edit Todo Modal -->
+  <div class="modal" id="edit-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <label for="edit-todo-title">Title:</label>
+        <input id="edit-todo-title"></input>
+        <button class="close-button">×</button>
+      </div>
+      <div class="modal-body">
+        <button class="confirm-button">CONFIRM EDIT</button>
+      </div>
+    </div>
+  </div>
+
+
 </body>
 </html>

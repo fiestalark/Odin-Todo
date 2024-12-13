@@ -3,34 +3,34 @@ export class TodoList {
         this.todos = [];
     }
 
-        addTodo(title) {
-            this.todos.push({
-                title,
+        addTodo(todoData) {
+            const newTodo = {
+                id: crypto.randomUUID(),
                 completed: false,
-                id: crypto.randomUUID()
-            });
-            this.displayTodos();
+                ...todoData
+            }
+            this.todos.push(newTodo);
+            return newTodo;
         }
+
 
         deleteTodo(id) {
             this.todos = this.todos.filter(todo => todo.id !== id);
         }
-
-        toggleComplete(id) {
-            
+        editTodo(id, updates = {}) {
+            this.todos = this.todos.map(todo => 
+                todo.id === id ? { ...todo, ...updates } : todo
+            );
+        }
+        
+        getTodo(id) {
+            // Use find to return the matching todo object directly; filter would return an array
+            return this.todos.find(todo => todo.id === id);
         }
 
-        displayTodos() {
-            const todoList = document.querySelector('#todoList');
-            todoList.innerHTML = '';
-
-            this.todos.forEach(todo => {
-                const li = document.createElement('li');
-                const todoSpan = document.createElement('span');
-                todoSpan.textContent = todo.title;
-                todo.completed ? todoSpan.classList.add('complete') : '';
-                li.appendChild(todoSpan);
-                todoList.appendChild(li);
-            });
+        toggleComplete(id) {
+            this.todos = this.todos.map(todo => 
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            );
         }
     }

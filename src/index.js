@@ -1,5 +1,6 @@
 import "./styles.css";
-import { UIManager } from './UIManagers.js';
+import { UiManager } from './UiManagers.js';
+import { TodoList } from './dataManagers.js';
 
-
-UIManager();
+const todoList = new TodoList();
+const ui = new UiManager(todoList);
