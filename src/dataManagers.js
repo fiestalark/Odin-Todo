@@ -6,7 +6,7 @@ export class TodoList {
     }
 
     async init() {
-        this.todos = await this.storageManager.loadTodos();
+        this.todos = await this.storageManager.load('todos');
     }
 
     async addTodo(todoData) {
@@ -27,25 +27,24 @@ export class TodoList {
             newTodo.quadrant = 5;
         }
         this.todos.push(newTodo);
-        await this.storageManager.saveTodos(this.todos);
+        await this.storageManager.save('todos', this.todos);
         return newTodo;
         }
 
     async deleteTodo(id) {
         this.todos = this.todos.filter(todo => todo.id !== id);
-        await this.storageManager.saveTodos(this.todos);
+        await this.storageManager.save('todos', this.todos);
     }
 
     async editTodo(id, updates = {}) {
         this.todos = this.todos.map(todo => 
             todo.id === id ? { ...todo, ...updates } : todo
         );
-        await this.storageManager.saveTodos(this.todos);
+        await this.storageManager.save('todos', this.todos);
     }
 
-    async filterByProject(project) {
-        return this.todos.filter(todo => todo.project === project);
-        // Might want to filter by project id? but that might need a project class, will need when I add ability to create a project
+    filterByProject(projectId) {
+        return this.todos.filter(todo => todo.projectId === projectId);
     }
     
     getTodo(id) {
@@ -57,25 +56,51 @@ export class TodoList {
         this.todos = this.todos.map(todo => 
             todo.id === id ? { ...todo, completed: !todo.completed } : todo
         );
-        await this.storageManager.saveTodos(this.todos);
+        await this.storageManager.save('todos', this.todos);
     }
 }
 
 export class Project {
-    constructor() {
+    constructor(storageManager) {
+        this.storageManager = storageManager;
         this.projects = [];
+        this.init();
     }
 
-    addProject(name) {
+    async init() {
+        this.projects = await this.storageManager.load('projects');
+
+        if (!this.projects || this.projects.length === 0) {
+            const defaultProject = {
+                id: crypto.randomUUID(),
+                name: 'Home',
+                isDefault: true
+            }
+            this.projects = [defaultProject];
+            await this.storageManager.save('projects', this.projects);
+        }
+    }
+
+    async addProject(name) {
         const newProject = {
             id: crypto.randomUUID(),
             name: name
         }
         this.projects.push(newProject);
+        await this.storageManager.save('projects', this.projects);
         return newProject;
     }
 
-    deleteProject(id) {
+    async deleteProject(id) {
         this.projects = this.projects.filter(project => project.id !== id);
+        await this.storageManager.save('projects', this.projects);
+    }
+
+    getProjectName(id) {
+        return this.projects.find(project => project.id === id);
+    }
+
+    getDefaultProjectId() {
+        return this.projects.find(p => p.isDefault)?.id;
     }
 }

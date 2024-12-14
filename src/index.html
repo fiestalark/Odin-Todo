@@ -27,30 +27,17 @@
     
         <!-- Projects section -->
         <div class="projects-section">
-            <div class="nav-item">
+            <div class="projects-header nav-item">
                 <span class="nav-title">Projects</span>
+                <button class="add-project-btn" id="add-project-btn">+</button>
             </div>
             
             <!-- Project items container - to be populated by JavaScript -->
             <div class="project-items" id="project-list">
-                <!-- Example structure of a project item -->
-                <div class="project-item">
-                    <span class="nav-title">Gym</span>
-                    <span class="badge">3</span>
-                </div>
-                <div class="project-item">
-                    <span class="nav-title">Study</span>
-                    <span class="badge">1</span>
-                </div>
-                <div class="project-item">
-                    <span class="nav-title">Work</span>
-                    <span class="badge">1</span>
-                </div>
             </div>
         </div>
     </nav>
         <div class="add-button" id="add-btn">+</div>
-        <!-- Add any other sidebar content here -->
     </aside>
     
     <main class="main-content">
@@ -106,7 +93,7 @@
 
       <div class="form-group">
         <label for="project">Project:</label>
-        <select id="project">
+        <select id="project-options">
           <option value="">Select a project</option>
           <option value="personal">Personal</option>
           <option value="work">Work</option>
@@ -143,6 +130,31 @@
 
       <button type="submit" id="submit-btn" class="submit-btn">ADD TO DO</button>
     </form>
+  </div>
+</div>
+
+<div class="project-modal" id="project-modal">
+  <div class="project-modal-content">
+      <div class="project-modal-header">
+          <span id="project-modal-title">Add Project</span>
+          <button class="project-modal-close" id="close-project-modal">&times;</button>
+      </div>
+      <form id="projectForm">
+          <div class="project-form-group">
+              <label for="projectName">Project Name</label>
+              <input 
+                  type="text" 
+                  id="projectName" 
+                  name="projectName"
+                  placeholder="Enter project name"
+                  required
+              >
+          </div>
+          <div class="project-modal-buttons">
+              <button type="button" class="project-modal-btn cancel" id="cancel-project">Cancel</button>
+              <button type="submit" class="project-modal-btn submit">Save Project</button>
+          </div>
+      </form>
   </div>
 </div>
 

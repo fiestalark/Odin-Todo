@@ -1,7 +1,11 @@
+import deleteIconSrc from './images/delete-icon.svg';
+import editIconSrc from './images/edit-icon.svg';
+
 export class UiManager {
     // todoList class is passed in when UiManager is called in index.js
-    constructor(todoList) {
+    constructor(todoList, projects) {
         this.todoList = todoList;
+        this.projectsList = projects;
         this.init();
         // Run event listeners as soon as function loads
         this.setupEventListeners();
@@ -9,15 +13,17 @@ export class UiManager {
 
     async init() {
         await this.todoList.init();
-        this.renderTodos();
+        await this.projectsList.init();
+        this.renderTodos(this.todoList.todos);
+        this.renderProjects();
     }
 
-    renderTodos() {
+    renderTodos(todos) {
         document.querySelectorAll('.todo-items').forEach(quadrant => {
             quadrant.innerHTML = '';
         });
 
-        this.todoList.todos.forEach(todo => {
+        todos.forEach(todo => {
             const todoElement = this.createTodoElement(todo);
             document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
         })
@@ -48,19 +54,19 @@ export class UiManager {
 
         // Project
         const project = document.createElement('span');
-        project.textContent = todo.project;
+        project.textContent = this.projectsList.getProjectName(todo.projectId).name;
 
         // Edit Icon
-        const editIcon = document.createElement('button');
-        editIcon.textContent = 'Edit';
+        const editIcon = document.createElement('img');
+        editIcon.src = editIconSrc;
         editIcon.classList.add('edit-icon');
 
         // Delete button
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.classList.add('delete-btn');
+        const deleteIcon = document.createElement('img');
+        deleteIcon.src = deleteIconSrc;
+        deleteIcon.classList.add('delete-icon');
 
-        li.append(checkbox, todoText, project, editIcon, deleteBtn);
+        li.append(checkbox, todoText, project, editIcon, deleteIcon);
         return li;
     }
 
@@ -137,20 +143,89 @@ export class UiManager {
     }
 
     saveEdit() {
+        // finish logic
+    }
 
+    // Project related methods
+
+    renderProjects() {
+        const projectList = document.getElementById('project-list');
+        projectList.innerHTML = '';
+
+        const projectOptions = document.getElementById('project-options');
+        projectOptions.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select a project';
+        defaultOption.setAttribute('selected', ''); 
+        defaultOption.setAttribute('disabled', '');
+        projectOptions.appendChild(defaultOption);
+
+        this.projectsList.projects.forEach(project => {
+            const projectElement = this.createProjectElement(project);
+            projectList.appendChild(projectElement);
+
+            const projectOption = document.createElement('option');
+            projectOption.value = project.name;
+            projectOption.dataset.id = project.id;
+            projectOption.textContent = project.name;
+
+            projectOptions.appendChild(projectOption);
+        });
+        
+    }
+
+    createProjectElement(project) {
+        const div = document.createElement('div');
+        div.classList.add('project-item');
+        div.dataset.id = project.id;
+        
+        const spanTitle = document.createElement('span');
+        spanTitle.classList.add('nav-title');
+        spanTitle.textContent = project.name;
+
+        const deleteIcon = document.createElement('img');
+        deleteIcon.src = deleteIconSrc;
+        deleteIcon.classList.add('delete-icon');
+
+        const spanBadge = document.createElement('span');
+        spanBadge.classList.add('badge');
+        spanBadge.textContent = ''; // Add count here
+
+        div.append(spanTitle, deleteIcon, spanBadge);
+        return div;
+    }
+
+    showProjectModal() {
+        document.getElementById('project-modal').classList.add('show');
+        document.getElementById('modal-backdrop').classList.add('show');
+    }
+
+    hideProjectModal() {
+        document.getElementById('project-modal').classList.remove('show');
+        document.getElementById('modal-backdrop').classList.remove('show');
     }
 
     setupEventListeners() {
+        // Clear local storage
+        // window.addEventListener('load', () => {
+        //     localStorage.clear();
+        //     console.log('localStorage has been cleared.');
+        // });
+
         // Event listeners for the create todo form
         const todoForm = document.getElementById('todoForm');
 
         todoForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Get title, importance, urgency
+            // Get todo item attributes
             const titleElement = todoForm.querySelector('#title');
             const title = titleElement.value.trim();
             const details = todoForm.querySelector('#details')?.value || '';
-            const project = todoForm.querySelector('#project')?.value || 'Home';
+            const projectSelect = todoForm.querySelector('#project-options');
+            const selectedOption = projectSelect.options[projectSelect.selectedIndex];
+            const projectId = selectedOption?.dataset.id || this.projectsList.getDefaultProjectId();
             const dueDate = todoForm.querySelector('#due-date')?.value || '';
             const importance = todoForm.querySelector('input[name="importance"]:checked')?.value || '';
             const urgency = todoForm.querySelector('input[name="urgency"]:checked')?.value || '';
@@ -160,7 +235,7 @@ export class UiManager {
                 return;
             }
 
-            const todoData = { title, details, project, dueDate, importance, urgency };
+            const todoData = { title, details, projectId, dueDate, importance, urgency };
 
             const newTodo = await this.todoList.addTodo(todoData);
             this.addTodoToDisplay(newTodo);
@@ -172,7 +247,7 @@ export class UiManager {
         // Event listeners for the todo items
         document.querySelectorAll('.todo-items').forEach(list => {
             list.addEventListener('click', async (e) => {
-                if (e.target.classList.contains('delete-btn')) {
+                if (e.target.classList.contains('delete-icon')) {
                     const id = e.target.parentElement.dataset.id;
                     await this.todoList.deleteTodo(id);
                     this.deleteTodoFromDisplay(id);
@@ -189,9 +264,12 @@ export class UiManager {
             });
         });
 
+        // Show add todo modal event listener
         document.getElementById('add-btn').addEventListener('click', (e) => {
             this.showTodoModal();
         })
+
+        // Close add todo modal event listener
         document.getElementById('close-todo-modal').addEventListener('click', (e) => {
             this.hideTodoModal();
         })
@@ -201,6 +279,53 @@ export class UiManager {
             btn.addEventListener('click', (e) => {
                 e.target.classList.toggle('selected');
             })
+        })
+
+        // Project event listeners
+
+        const projectForm = document.getElementById('projectForm');
+
+        projectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameElement = projectForm.querySelector('#projectName');
+            const name = nameElement.value.trim();
+
+            
+            if (!name) {
+                console.error('Name is required!');
+                return;
+            }
+
+            await this.projectsList.addProject(name);
+            this.renderProjects();
+            nameElement.value = '';
+            this.hideProjectModal();
+        })
+
+        document.getElementById('project-list').addEventListener('click', async (e) => {
+            const projectItem = e.target.closest('.project-item');
+
+            if (e.target.classList.contains('delete-icon')) {
+                //const projectItem = e.target.closest('.project-item');
+                e.stopPropagation();
+                const id = projectItem.dataset.id;
+                await this.projectsList.deleteProject(id);
+                this.renderProjects();
+            }
+            if (projectItem && !e.target.classList.contains('delete-icon')) {
+                const projectId = projectItem.dataset.id;
+                this.renderTodos(this.todoList.filterByProject(projectId));
+            }
+        });
+
+        // Show add project modal event listener
+        document.getElementById('add-project-btn').addEventListener('click', (e) => {
+            this.showProjectModal();
+        })
+
+        // Close add project modal event listener
+        document.getElementById('close-project-modal').addEventListener('click', (e) => {
+            this.hideProjectModal();
         })
     }
 }

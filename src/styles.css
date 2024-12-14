@@ -91,6 +91,29 @@ body {
     margin-top: 20px;
 }
 
+.projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.add-project-btn {
+    color: #666;
+    font-size: 2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-project-btn:hover {
+    color: var(--primary-pink);
+}
+
 .project-items {
     padding-left: 20px;
 }
@@ -107,6 +130,136 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+.delete-icon, .edit-icon {
+    cursor: pointer;
+    height: 1em;
+    margin-left: 8px;
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.delete-icon:hover, .edit-icon:hover {
+    opacity: 1;
+    /* Makes it red on hover */
+    filter: invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(95%) contrast(112%);
+}
+
+/* Project Modal Styling */
+.project-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 999;
+    width: 90%;
+    max-width: 400px;
+}
+
+.project-modal-content {
+    padding: 30px;
+    position: relative;
+}
+
+.project-modal-header {
+    background: var(--primary-pink);
+    color: white;
+    padding: 15px 20px;
+    font-size: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-modal-close {
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#projectForm {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.project-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.project-form-group label {
+    font-weight: 500;
+    color: #666;
+}
+
+.project-form-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.project-form-group input:focus {
+    outline: none;
+    border-color: var(--primary-teal);
+    box-shadow: 0 0 0 2px rgba(64, 179, 162, 0.1);
+}
+
+.project-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.project-modal-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+.project-modal-btn.cancel {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.project-modal-btn.submit {
+    background-color: var(--primary-teal);
+    color: white;
+}
+
+.project-modal-btn:hover {
+    opacity: 0.9;
+}
+
+/* Show classes */
+.project-modal.show {
+    display: block;
+}
+
+/* Add Button Styling */
 .add-button {
     background-color: var(--primary-pink);
     border: none;

@@ -1,25 +1,21 @@
 export class StorageManager {
-    constructor() {
-        this.storageKey = 'todos'; // Key used in localStorage
-    }
-
     // Build async to support transition to databases later
 
-    async loadTodos() {
+    async load(key) {
         try {
-            const data = localStorage.getItem(this.storageKey);
+            const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : [];
         } catch(error) {
-            console.error('Error loading todos:', error);
+            console.error(`Error loading ${key}:`, error);
             return [];
         }
     }
 
-    async saveTodos(todos) {
+    async save(key, data) {
         try {
-            localStorage.setItem(this.storageKey, JSON.stringify(todos));
+            localStorage.setItem(key, JSON.stringify(data));
         } catch(error) {
-            console.error('Error saving todos:', error);
+            console.error(`Error saving ${key}:`, error);
         }
     }
 }
