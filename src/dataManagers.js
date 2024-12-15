@@ -43,8 +43,40 @@ export class TodoList {
         await this.storageManager.save('todos', this.todos);
     }
 
-    filterByProject(projectId) {
-        return this.todos.filter(todo => todo.projectId === projectId);
+    filterTodos(filters = {}) {
+        if (Object.keys(filters).length === 0) {
+            return this.todos;
+        }
+
+        const filterHandlers = {
+            projectId: (todo, value) => todo.projectId === value,
+            quadrant: (todo, value) => todo.quadrant === value,
+            dueDate: (todo, value) => {
+                const todoDate = new Date(todo.dueDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const dateHandlers = {
+                    today: () => todoDate.toDateString() === today.toDateString(),
+                    thisWeek: () => {
+                        const weekFromNow = new Date(today);
+                        weekFromNow.setDate(weekFromNow.getDate() + 7);
+                        return todoDate >= today && todoDate <= weekFromNow;
+                    }
+                };
+                return dateHandlers[value]();
+            }
+        };
+
+        return this.todos.filter(todo => 
+            Object.entries(filters).every(([key, value]) => 
+                (filterHandlers[key] || (() => true))(todo, value)
+            )
+        );
+    }
+
+    getTodoCount(filters = {}) {
+        return this.filterTodos(filters).length;
     }
     
     getTodo(id) {

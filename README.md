@@ -24,3 +24,5 @@ Add methods for bulk operations (like moving multiple todos)
 Searching in the description as well as the title
 Adding fuzzy search for better matching
 Adding the ability to search by other fields like priority or due date
+
+Need to make sure counts update when adding a todo

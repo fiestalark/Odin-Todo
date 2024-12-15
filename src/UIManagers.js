@@ -27,6 +27,7 @@ export class UiManager {
             const todoElement = this.createTodoElement(todo);
             document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
         })
+        this.populateCounts();
     }
 
     getTodoElement(id) {
@@ -52,10 +53,6 @@ export class UiManager {
             todoText.classList.add('completed');
         }
 
-        // Project
-        const project = document.createElement('span');
-        project.textContent = this.projectsList.getProjectName(todo.projectId).name;
-
         // Edit Icon
         const editIcon = document.createElement('img');
         editIcon.src = editIconSrc;
@@ -66,13 +63,14 @@ export class UiManager {
         deleteIcon.src = deleteIconSrc;
         deleteIcon.classList.add('delete-icon');
 
-        li.append(checkbox, todoText, project, editIcon, deleteIcon);
+        li.append(checkbox, todoText, editIcon, deleteIcon);
         return li;
     }
 
     addTodoToDisplay(todo) {
         const todoElement = this.createTodoElement(todo);
         document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
+        this.populateCounts();
     }
 
     toggleTodoComplete(id) {
@@ -137,6 +135,7 @@ export class UiManager {
                     }
                 } else {
                     element.value = todoToEdit[key];
+                    console.log(element);
                 }
             }
         });
@@ -191,7 +190,7 @@ export class UiManager {
 
         const spanBadge = document.createElement('span');
         spanBadge.classList.add('badge');
-        spanBadge.textContent = ''; // Add count here
+        spanBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
 
         div.append(spanTitle, deleteIcon, spanBadge);
         return div;
@@ -205,6 +204,25 @@ export class UiManager {
     hideProjectModal() {
         document.getElementById('project-modal').classList.remove('show');
         document.getElementById('modal-backdrop').classList.remove('show');
+    }
+
+    renderQuadrants() {
+
+    }
+
+    createQuadrantElements() {
+
+    }
+
+    populateCounts() {
+        const homeCount = document.getElementById('home-badge');
+        homeCount.textContent = this.todoList.getTodoCount();
+
+        const todayCount = document.getElementById('today-badge');
+        todayCount.textContent = this.todoList.getTodoCount({ dueDate: 'today' })
+
+        const weekCount = document.getElementById('week-badge');
+        weekCount.textContent = this.todoList.getTodoCount({ dueDate: 'thisWeek' });
     }
 
     setupEventListeners() {
@@ -226,7 +244,7 @@ export class UiManager {
             const projectSelect = todoForm.querySelector('#project-options');
             const selectedOption = projectSelect.options[projectSelect.selectedIndex];
             const projectId = selectedOption?.dataset.id || this.projectsList.getDefaultProjectId();
-            const dueDate = todoForm.querySelector('#due-date')?.value || '';
+            const dueDate = todoForm.querySelector('#dueDate')?.value || '';
             const importance = todoForm.querySelector('input[name="importance"]:checked')?.value || '';
             const urgency = todoForm.querySelector('input[name="urgency"]:checked')?.value || '';
 
@@ -314,7 +332,7 @@ export class UiManager {
             }
             if (projectItem && !e.target.classList.contains('delete-icon')) {
                 const projectId = projectItem.dataset.id;
-                this.renderTodos(this.todoList.filterByProject(projectId));
+                this.renderTodos(this.todoList.filterTodos({projectId: projectId}));
             }
         });
 
@@ -326,6 +344,11 @@ export class UiManager {
         // Close add project modal event listener
         document.getElementById('close-project-modal').addEventListener('click', (e) => {
             this.hideProjectModal();
+        })
+
+        // Sidebar event listeners
+        document.getElementById('home').addEventListener('click', (e) => {
+            this.renderTodos(this.todoList.todos);
         })
     }
 }

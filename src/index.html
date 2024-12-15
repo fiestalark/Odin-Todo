@@ -8,21 +8,21 @@
 <body>
   <div class="layout-container">
     <aside class="sidebar">
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" id="navbar">
         <!-- Main navigation items -->
-        <div class="nav-item nav-home">
+        <div class="nav-item nav-home" id="home">
             <span class="nav-title">Home</span>
-            <span class="badge" id="home-badge">8</span>
+            <span class="badge" id="home-badge"></span>
         </div>
         
-        <div class="nav-item">
+        <div class="nav-item" id="today">
             <span class="nav-title">Today</span>
-            <span class="badge" id="today-badge">1</span>
+            <span class="badge" id="today-badge"></span>
         </div>
         
-        <div class="nav-item">
+        <div class="nav-item" id="this-week">
             <span class="nav-title">Week</span>
-            <span class="badge" id="week-badge">1</span>
+            <span class="badge" id="week-badge"></span>
         </div>
     
         <!-- Projects section -->
@@ -33,8 +33,15 @@
             </div>
             
             <!-- Project items container - to be populated by JavaScript -->
-            <div class="project-items" id="project-list">
-            </div>
+            <div class="project-items" id="project-list"></div>
+
+
+        </div>
+        <div class="quadrants-section">
+          <div class="quadrants-header nav-item"></div>
+            <span class="nav-title">Quadrants</span>
+          <!-- Quadrants to be populated by javascript -->
+          <div class="quadrants" id="quadrants"></div>
         </div>
     </nav>
         <div class="add-button" id="add-btn">+</div>
@@ -103,7 +110,7 @@
 
       <div class="form-group">
         <label for="due-date">Due Date:</label>
-        <input type="date" id="due-date">
+        <input type="date" id="dueDate">
       </div>
 
       <fieldset class="option-group">
