@@ -87,11 +87,11 @@ body {
 }
 
 /* Projects section styling */
-.projects-section {
+.projects-section, .quadrants-section {
     margin-top: 20px;
 }
 
-.projects-header {
+.projects-header, .quadrants-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -114,11 +114,11 @@ body {
     color: var(--primary-pink);
 }
 
-.project-items {
+.project-items, .quadrants {
     padding-left: 20px;
 }
 
-.project-item {
+.project-item, .quadrant-item {
     display: flex;
     align-items: center;
     justify-content: space-between;

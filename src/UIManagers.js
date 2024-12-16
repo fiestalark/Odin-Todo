@@ -16,6 +16,7 @@ export class UiManager {
         await this.projectsList.init();
         this.renderTodos(this.todoList.todos);
         this.renderProjects();
+        this.renderQuadrants();
     }
 
     renderTodos(todos) {
@@ -123,21 +124,34 @@ export class UiManager {
         // First reset the form to clear any previous values
         todoForm.reset();
 
-        // Then populate the form fields
-        Object.keys(todoToEdit).forEach(key => {
-            const element = todoForm.elements[key];
-            if (element) {
-                if (element.type === 'radio') {
-                    // For radio buttons, we need to find and check the correct one
-                    const radio = todoForm.querySelector(`input[name="${key}"][value="${todoToEdit[key]}"]`);
-                    if (radio) {
-                        radio.checked = true;
-                    }
-                } else {
-                    element.value = todoToEdit[key];
-                    console.log(element);
+        // Handle the project selection separately since its id doesn't match the todo property
+        const projectSelect = todoForm.querySelector('#project-options');
+        if (projectSelect && todoToEdit.projectId) {
+            const options = projectSelect.options;
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].dataset.id === todoToEdit.projectId) {
+                    projectSelect.selectedIndex = i;
+                    break;
                 }
             }
+        }
+
+        // Then populate the form fields
+        Object.keys(todoToEdit).forEach(key => {
+            if (key !== projectId) {
+                const element = todoForm.elements[key];
+                if (element) {
+                    if (element.type === 'radio') {
+                        // For radio buttons, we need to find and check the correct one
+                        const radio = todoForm.querySelector(`input[name="${key}"][value="${todoToEdit[key]}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                        }
+                    } else {
+                        element.value = todoToEdit[key];
+                    }
+                }
+            }  
         });
     }
 
@@ -207,11 +221,37 @@ export class UiManager {
     }
 
     renderQuadrants() {
+        const quadrants = document.getElementById('quadrants');
+        quadrants.innerHTML = '';
 
+        const quadrantValues = {
+            1: 'Do First',
+            2: 'Schedule',
+            3: 'Delegate',
+            4: 'Eliminate'
+        }
+
+        Object.entries(quadrantValues).forEach(([id, value]) => {
+            const quadrantElement = this.createQuadrantElements(id, value);
+            quadrants.appendChild(quadrantElement);
+        }); 
     }
 
-    createQuadrantElements() {
+    createQuadrantElements(id, name) {
+        const div = document.createElement('div');
+        div.classList.add('quadrant-item');
+        div.dataset.id = id;
+        
+        const spanTitle = document.createElement('span');
+        spanTitle.classList.add('nav-title');
+        spanTitle.textContent = name;
 
+        const spanBadge = document.createElement('span');
+        spanBadge.classList.add('badge');
+        spanBadge.textContent = this.todoList.getTodoCount({quadrant: id});
+
+        div.append(spanTitle, spanBadge);
+        return div;
     }
 
     populateCounts() {

@@ -50,14 +50,23 @@ export class TodoList {
 
         const filterHandlers = {
             projectId: (todo, value) => todo.projectId === value,
-            quadrant: (todo, value) => todo.quadrant === value,
+            quadrant: (todo, value) => Number(todo.quadrant) === Number(value),
             dueDate: (todo, value) => {
-                const todoDate = new Date(todo.dueDate);
+                // Parse the date in local timezone by appending T00:00
+                const todoDate = new Date(`${todo.dueDate}T00:00`);
+                
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
                 const dateHandlers = {
-                    today: () => todoDate.toDateString() === today.toDateString(),
+                    today: () => {
+                        const isSameDay = 
+                            todoDate.getFullYear() === today.getFullYear() &&
+                            todoDate.getMonth() === today.getMonth() &&
+                            todoDate.getDate() === today.getDate();
+
+                        return isSameDay;
+                    },
                     thisWeek: () => {
                         const weekFromNow = new Date(today);
                         weekFromNow.setDate(weekFromNow.getDate() + 7);
@@ -69,9 +78,10 @@ export class TodoList {
         };
 
         return this.todos.filter(todo => 
-            Object.entries(filters).every(([key, value]) => 
-                (filterHandlers[key] || (() => true))(todo, value)
-            )
+            Object.entries(filters).every(([key, value]) => {
+                const handler = filterHandlers[key] || (() => true);
+                return handler(todo, value);
+            })
         );
     }
 
