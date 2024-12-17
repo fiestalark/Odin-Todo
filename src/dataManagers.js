@@ -41,6 +41,7 @@ export class TodoList {
             todo.id === id ? { ...todo, ...updates } : todo
         );
         await this.storageManager.save('todos', this.todos);
+        return this.getTodo(id);
     }
 
     filterTodos(filters = {}) {
@@ -49,6 +50,7 @@ export class TodoList {
         }
 
         const filterHandlers = {
+            id: (todo, value) => todo.id === value,
             projectId: (todo, value) => todo.projectId === value,
             quadrant: (todo, value) => Number(todo.quadrant) === Number(value),
             dueDate: (todo, value) => {

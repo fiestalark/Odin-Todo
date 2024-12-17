@@ -7,6 +7,7 @@ export class UiManager {
         this.todoList = todoList;
         this.projectsList = projects;
         this.init();
+        this.todoToEditId = '';
         // Run event listeners as soon as function loads
         this.setupEventListeners();
     }
@@ -69,9 +70,17 @@ export class UiManager {
     }
 
     addTodoToDisplay(todo) {
+        this.deleteOldTodo(todo.id);
         const todoElement = this.createTodoElement(todo);
         document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
         this.populateCounts();
+    }
+
+    deleteOldTodo(id) {
+        const oldTodo = document.querySelector(`[data-id="${id}"]`);
+        if (oldTodo) {
+            oldTodo.remove();
+        }
     }
 
     toggleTodoComplete(id) {
@@ -107,7 +116,7 @@ export class UiManager {
         document.getElementById('modal-backdrop').classList.remove('show');
     }
 
-    showEditModal(id) {
+    async showEditModal(id) {
         const modal = document.getElementById('todo-modal');
         const modalTitle = document.getElementById('modal-title');
         const submitBtn = document.getElementById('submit-btn');
@@ -138,7 +147,7 @@ export class UiManager {
 
         // Then populate the form fields
         Object.keys(todoToEdit).forEach(key => {
-            if (key !== projectId) {
+            //if (key !== projectId) {
                 const element = todoForm.elements[key];
                 if (element) {
                     if (element.type === 'radio') {
@@ -151,12 +160,8 @@ export class UiManager {
                         element.value = todoToEdit[key];
                     }
                 }
-            }  
+            //}  
         });
-    }
-
-    saveEdit() {
-        // finish logic
     }
 
     // Project related methods
@@ -266,7 +271,7 @@ export class UiManager {
     }
 
     setupEventListeners() {
-        // Clear local storage
+        //Clear local storage
         // window.addEventListener('load', () => {
         //     localStorage.clear();
         //     console.log('localStorage has been cleared.');
@@ -294,9 +299,14 @@ export class UiManager {
             }
 
             const todoData = { title, details, projectId, dueDate, importance, urgency };
-
-            const newTodo = await this.todoList.addTodo(todoData);
-            this.addTodoToDisplay(newTodo);
+            if (this.todoToEditId !== '') {
+                const updatedTodo = await this.todoList.editTodo(this.todoToEditId, todoData);
+                this.addTodoToDisplay(updatedTodo);
+                this.todoToEditId = '';
+            } else {
+                const newTodo = await this.todoList.addTodo(todoData);
+                this.addTodoToDisplay(newTodo);
+            }
             titleElement.value = '';
             todoForm.querySelectorAll('input[type="radio"]:checked').forEach(input => input.checked = false);
             this.hideTodoModal();
@@ -317,6 +327,7 @@ export class UiManager {
                 }
                 if (e.target.classList.contains('edit-icon')) {
                     const id = e.target.parentElement.dataset.id;
+                    this.todoToEditId = id;
                     this.showEditModal(id);
                 }
             });
