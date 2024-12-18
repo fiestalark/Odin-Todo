@@ -26,9 +26,8 @@ export class UiManager {
         });
 
         todos.forEach(todo => {
-            const todoElement = this.createTodoElement(todo);
-            document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
-        })
+            this.updateTodoDisplay(todo);
+        });
         this.populateCounts();
     }
 
@@ -69,18 +68,27 @@ export class UiManager {
         return li;
     }
 
-    addTodoToDisplay(todo) {
-        this.deleteOldTodo(todo.id);
-        const todoElement = this.createTodoElement(todo);
-        document.getElementById(`quadrant${todo.quadrant}`).appendChild(todoElement);
-        this.populateCounts();
-    }
+    updateTodoDisplay(todo) {
+        const todoElement = document.querySelector(`[data-id="${todo.id}"]`);
+        if (todoElement) {
+            // Update todo content
+            todoElement.querySelector('.todo-text').textContent = todo.title;
+            todoElement.querySelector('.toggle-checkbox').checked = todo.completed;
 
-    deleteOldTodo(id) {
-        const oldTodo = document.querySelector(`[data-id="${id}"]`);
-        if (oldTodo) {
-            oldTodo.remove();
+            // Move to new quadrant, if needed
+            const currentQuadrant = todoElement.parentElement;
+            console.log(currentQuadrant);
+            const correctQuadrant = document.getElementById(`quadrant${todo.quadrant}`);
+            console.log(correctQuadrant);
+
+            if (currentQuadrant.id !== correctQuadrant.id) {
+                correctQuadrant.appendChild(todoElement);
+            }
+        } else {
+            const newTodoElement = this.createTodoElement(todo);
+            document.getElementById(`quadrant${todo.quadrant}`).appendChild(newTodoElement);
         }
+        this.populateCounts();
     }
 
     toggleTodoComplete(id) {
@@ -299,13 +307,15 @@ export class UiManager {
             }
 
             const todoData = { title, details, projectId, dueDate, importance, urgency };
+            
             if (this.todoToEditId !== '') {
                 const updatedTodo = await this.todoList.editTodo(this.todoToEditId, todoData);
-                this.addTodoToDisplay(updatedTodo);
+                console.log("Updated todo: ", updatedTodo);
+                this.updateTodoDisplay(updatedTodo);
                 this.todoToEditId = '';
             } else {
                 const newTodo = await this.todoList.addTodo(todoData);
-                this.addTodoToDisplay(newTodo);
+                this.updateTodoDisplay(newTodo);
             }
             titleElement.value = '';
             todoForm.querySelectorAll('input[type="radio"]:checked').forEach(input => input.checked = false);

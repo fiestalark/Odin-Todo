@@ -13,18 +13,8 @@ export class TodoList {
         const newTodo = {
             id: crypto.randomUUID(),
             completed: false,
-            ...todoData
-        }
-        if (newTodo.urgency && newTodo.importance) {
-            const quadrantMap = {
-                'high-high': 1,
-                'low-high': 2,
-                'high-low': 3,
-                'low-low': 4
-            };
-            newTodo.quadrant = quadrantMap[`${newTodo.urgency}-${newTodo.importance}`];
-        } else {
-            newTodo.quadrant = 5;
+            ...todoData, 
+            quadrant: this.calculateQuadrant(todoData.urgency, todoData.importance)
         }
         this.todos.push(newTodo);
         await this.storageManager.save('todos', this.todos);
@@ -37,11 +27,33 @@ export class TodoList {
     }
 
     async editTodo(id, updates = {}) {
-        this.todos = this.todos.map(todo => 
-            todo.id === id ? { ...todo, ...updates } : todo
-        );
+        this.todos = this.todos.map(todo => {
+            if (todo.id === id) {
+                const updatedTodo = { ...todo, ...updates };
+                if (updates.urgency || updates.importance) {
+                    updatedTodo.quadrant = this.calculateQuadrant(updatedTodo.urgency, updatedTodo.importance);
+                }
+                return updatedTodo;
+            }
+            return todo;
+        });
+
         await this.storageManager.save('todos', this.todos);
         return this.getTodo(id);
+    }
+
+    calculateQuadrant(urgency, importance) {
+        if (!urgency || !importance) {
+            return 5;
+        }
+        const quadrantMap = {
+            'high-high': 1,
+            'low-high': 2,
+            'high-low': 3,
+            'low-low': 4
+        };
+
+        return quadrantMap[`${urgency}-${importance}`];
     }
 
     filterTodos(filters = {}) {
