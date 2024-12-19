@@ -26,3 +26,8 @@ Adding fuzzy search for better matching
 Adding the ability to search by other fields like priority or due date
 
 Need to make sure counts update when adding a todo, in both project list and other places; streamline this somehow
+
+Change counts when toggle a todo item as complete
+
+
+add a way to see what was completed in a day, week , month etc

@@ -18,6 +18,7 @@ export class UiManager {
         this.renderTodos(this.todoList.todos);
         this.renderProjects();
         this.renderQuadrants();
+        this.populateCounts();
     }
 
     renderTodos(todos) {
@@ -199,7 +200,7 @@ export class UiManager {
 
             projectOptions.appendChild(projectOption);
         });
-        
+        this.populateCounts();
     }
 
     createProjectElement(project) {
@@ -217,7 +218,8 @@ export class UiManager {
 
         const spanBadge = document.createElement('span');
         spanBadge.classList.add('badge');
-        spanBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
+        spanBadge.dataset.id = project.id;
+        //spanBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
 
         div.append(spanTitle, deleteIcon, spanBadge);
         return div;
@@ -261,7 +263,8 @@ export class UiManager {
 
         const spanBadge = document.createElement('span');
         spanBadge.classList.add('badge');
-        spanBadge.textContent = this.todoList.getTodoCount({quadrant: id});
+        spanBadge.dataset.id = `Quadrant-${id}`;
+        //spanBadge.textContent = this.todoList.getTodoCount({quadrant: id});
 
         div.append(spanTitle, spanBadge);
         return div;
@@ -276,6 +279,15 @@ export class UiManager {
 
         const weekCount = document.getElementById('week-badge');
         weekCount.textContent = this.todoList.getTodoCount({ dueDate: 'thisWeek' });
+
+        this.projectsList.projects.forEach(project => {
+            const projectCountBadge = document.querySelector(`span[data-id="${project.id}"]`);
+            console.log(projectCountBadge);
+            if (projectCountBadge) {
+                projectCountBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
+            }
+            
+        })
     }
 
     setupEventListeners() {
@@ -329,11 +341,13 @@ export class UiManager {
                     const id = e.target.parentElement.dataset.id;
                     await this.todoList.deleteTodo(id);
                     this.deleteTodoFromDisplay(id);
+                    this.populateCounts();
                 }
                 if (e.target.classList.contains('toggle-checkbox')) {
                     const id = e.target.parentElement.dataset.id;
                     await this.todoList.toggleComplete(id);
                     this.toggleTodoComplete(id);
+                    this.populateCounts();
                 }
                 if (e.target.classList.contains('edit-icon')) {
                     const id = e.target.parentElement.dataset.id;
@@ -385,7 +399,6 @@ export class UiManager {
             const projectItem = e.target.closest('.project-item');
 
             if (e.target.classList.contains('delete-icon')) {
-                //const projectItem = e.target.closest('.project-item');
                 e.stopPropagation();
                 const id = projectItem.dataset.id;
                 await this.projectsList.deleteProject(id);
@@ -408,8 +421,16 @@ export class UiManager {
         })
 
         // Sidebar event listeners
-        document.getElementById('home').addEventListener('click', (e) => {
-            this.renderTodos(this.todoList.todos);
+        const sidebar = document.querySelector('.sidebar-nav');
+
+        sidebar.addEventListener('click', (e) => {
+            if (e.target.id === 'home') {
+                this.renderTodos(this.todoList.todos);
+            } else if (e.target.id === 'today') {
+                this.renderTodos(this.todoList.filterTodos({dueDate : 'today'}));
+            } else if (e.target.id === 'this-week') {
+                this.renderTodos(this.todoList.filterTodos({dueDate : 'thisWeek'}));
+            }
         })
     }
 }
