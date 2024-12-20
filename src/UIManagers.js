@@ -1,3 +1,4 @@
+// UiManager.js
 import deleteIconSrc from './images/delete-icon.svg';
 import editIconSrc from './images/edit-icon.svg';
 
@@ -17,7 +18,7 @@ export class UiManager {
         await this.projectsList.init();
         this.renderTodos(this.todoList.todos);
         this.renderProjects();
-        this.renderQuadrants();
+        this.renderSidebarQuadrants();
         this.populateCounts();
     }
 
@@ -37,7 +38,6 @@ export class UiManager {
     }
 
     createTodoElement(todo) {
-        console.log(todo);
         const li = document.createElement('li');
         li.dataset.id = todo.id;
 
@@ -78,9 +78,7 @@ export class UiManager {
 
             // Move to new quadrant, if needed
             const currentQuadrant = todoElement.parentElement;
-            console.log(currentQuadrant);
             const correctQuadrant = document.getElementById(`quadrant${todo.quadrant}`);
-            console.log(correctQuadrant);
 
             if (currentQuadrant.id !== correctQuadrant.id) {
                 correctQuadrant.appendChild(todoElement);
@@ -219,7 +217,6 @@ export class UiManager {
         const spanBadge = document.createElement('span');
         spanBadge.classList.add('badge');
         spanBadge.dataset.id = project.id;
-        //spanBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
 
         div.append(spanTitle, deleteIcon, spanBadge);
         return div;
@@ -231,11 +228,12 @@ export class UiManager {
     }
 
     hideProjectModal() {
+        document.getElementById('projectName').value = '';
         document.getElementById('project-modal').classList.remove('show');
         document.getElementById('modal-backdrop').classList.remove('show');
     }
 
-    renderQuadrants() {
+    renderSidebarQuadrants() {
         const quadrants = document.getElementById('quadrants');
         quadrants.innerHTML = '';
 
@@ -243,7 +241,8 @@ export class UiManager {
             1: 'Do First',
             2: 'Schedule',
             3: 'Delegate',
-            4: 'Eliminate'
+            4: 'Eliminate',
+            5: 'Unassigned'
         }
 
         Object.entries(quadrantValues).forEach(([id, value]) => {
@@ -270,6 +269,33 @@ export class UiManager {
         return div;
     }
 
+    renderSingleQuadrant(quadrantId) {
+        // First, clear all quadrants
+        document.querySelectorAll('.quadrant').forEach(q => {
+            q.style.display = 'none';
+        });
+
+        // Show only selected quadrant and make it full width
+        const selectedQuadrant = document.querySelector(`#quadrant${quadrantId}`).closest('.quadrant');
+        selectedQuadrant.style.display = 'flex';
+        selectedQuadrant.style.gridColumn = '1 / span 2';
+        selectedQuadrant.style.height = 'calc(100vh - 100px)';
+
+        const filteredTodos = this.todoList.filterTodos({ quadrant: quadrantId});
+        this.renderTodos(filteredTodos);
+    }
+
+    restoreMatrixQuadrantLayout() {
+        console.log('restore quadrants called');
+        document.querySelectorAll('.quadrant').forEach(q => {
+            q.style.display = 'flex';
+            q.style.gridColumn = '';
+            q.style.height = '';
+        });
+
+        this.renderTodos(this.todoList.todos);
+    }
+
     populateCounts() {
         const homeCount = document.getElementById('home-badge');
         homeCount.textContent = this.todoList.getTodoCount();
@@ -282,7 +308,6 @@ export class UiManager {
 
         this.projectsList.projects.forEach(project => {
             const projectCountBadge = document.querySelector(`span[data-id="${project.id}"]`);
-            console.log(projectCountBadge);
             if (projectCountBadge) {
                 projectCountBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
             }
@@ -322,7 +347,6 @@ export class UiManager {
             
             if (this.todoToEditId !== '') {
                 const updatedTodo = await this.todoList.editTodo(this.todoToEditId, todoData);
-                console.log("Updated todo: ", updatedTodo);
                 this.updateTodoDisplay(updatedTodo);
                 this.todoToEditId = '';
             } else {
@@ -365,7 +389,7 @@ export class UiManager {
         // Close add todo modal event listener
         document.getElementById('close-todo-modal').addEventListener('click', (e) => {
             this.hideTodoModal();
-        })
+        });
 
         // Toggle selected class on urgency/importance radio buttons
         document.querySelectorAll('.radio-btn').forEach(btn => {
@@ -420,17 +444,34 @@ export class UiManager {
             this.hideProjectModal();
         })
 
+        document.getElementById('cancel-project').addEventListener('click', (e) => {
+            this.hideProjectModal();
+        })
+
         // Sidebar event listeners
         const sidebar = document.querySelector('.sidebar-nav');
 
         sidebar.addEventListener('click', (e) => {
-            if (e.target.id === 'home') {
-                this.renderTodos(this.todoList.todos);
-            } else if (e.target.id === 'today') {
+            const navItem = e.target.closest('.nav-item');
+            
+            if (!navItem) {
+                return;
+            }
+            if (navItem.id === 'home') {
+                this.restoreMatrixQuadrantLayout();
+            } else if (navItem.id === 'today') {
                 this.renderTodos(this.todoList.filterTodos({dueDate : 'today'}));
-            } else if (e.target.id === 'this-week') {
+            } else if (navItem.id === 'this-week') {
                 this.renderTodos(this.todoList.filterTodos({dueDate : 'thisWeek'}));
             }
         })
+
+        document.getElementById('quadrants').addEventListener('click', (e) => {
+            const quadrantItem = e.target.closest('.quadrant-item');
+            if (quadrantItem) {
+                const quadrantId = quadrantItem.dataset.id;
+                this.renderSingleQuadrant(quadrantId);
+            }
+        });
     }
 }

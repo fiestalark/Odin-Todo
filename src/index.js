@@ -1,3 +1,4 @@
+// index.js
 import "./styles.css";
 import { UiManager } from './UiManagers.js';
 import { TodoList, Project } from './dataManagers.js';

@@ -31,3 +31,8 @@ Change counts when toggle a todo item as complete
 
 
 add a way to see what was completed in a day, week , month etc
+Add edit project functionality
+Deleting a project should move all its todos to default project
+
+
+Add checklist and notes to todos
