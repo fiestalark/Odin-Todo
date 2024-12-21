@@ -9,6 +9,13 @@ export class UiManager {
         this.projectsList = projects;
         this.init();
         this.todoToEditId = '';
+        this.quadrantValues = {
+            1: 'Do First',
+            2: 'Schedule',
+            3: 'Delegate',
+            4: 'Eliminate',
+            5: 'Unassigned'
+        }
         // Run event listeners as soon as function loads
         this.setupEventListeners();
     }
@@ -237,15 +244,7 @@ export class UiManager {
         const quadrants = document.getElementById('quadrants');
         quadrants.innerHTML = '';
 
-        const quadrantValues = {
-            1: 'Do First',
-            2: 'Schedule',
-            3: 'Delegate',
-            4: 'Eliminate',
-            5: 'Unassigned'
-        }
-
-        Object.entries(quadrantValues).forEach(([id, value]) => {
+        Object.entries(this.quadrantValues).forEach(([id, value]) => {
             const quadrantElement = this.createQuadrantElements(id, value);
             quadrants.appendChild(quadrantElement);
         }); 
@@ -311,7 +310,13 @@ export class UiManager {
             if (projectCountBadge) {
                 projectCountBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
             }
-            
+        })
+
+        Object.entries(this.quadrantValues).forEach(([key, value]) => {
+            const quadrantCountBadge = document.querySelector(`span[data-id="Quadrant-${key}"]`);
+            if (quadrantCountBadge) {
+                quadrantCountBadge.textContent = this.todoList.getTodoCount({quadrant: key});
+            }
         })
     }
 
@@ -357,7 +362,10 @@ export class UiManager {
             todoForm.querySelectorAll('input[type="radio"]:checked').forEach(input => input.checked = false);
             this.hideTodoModal();
         });
-
+        document.querySelector('.todo-container').addEventListener('click', async (e) => {
+            const todoItem = e.target.closest('.todo-items');
+            if (!todoItem) return;
+        })
         // Event listeners for the todo items
         document.querySelectorAll('.todo-items').forEach(list => {
             list.addEventListener('click', async (e) => {

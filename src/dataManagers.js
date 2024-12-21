@@ -7,7 +7,13 @@ export class TodoList {
     }
 
     async init() {
-        this.todos = await this.storageManager.load('todos');
+        try {
+            this.todos = await this.storageManager.load('todos') || [];
+        } catch (error) {
+            console.error('Failed to initialize todos: ', error);
+            this.todos = [];
+        }
+        
     }
 
     async addTodo(todoData) {
@@ -44,7 +50,8 @@ export class TodoList {
     }
 
     calculateQuadrant(urgency, importance) {
-        if (!urgency || !importance) {
+        const validValues = ['high', 'low'];
+        if (!validValues.includes(urgency) || !validValues.includes(importance)) {
             return 5;
         }
         const quadrantMap = {
