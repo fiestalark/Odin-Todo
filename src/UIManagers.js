@@ -311,7 +311,8 @@ export class UiManager {
                 projectCountBadge.textContent = this.todoList.getTodoCount({projectId: project.id});
             }
         })
-
+        // Use object.entries to transform the object into an array of arrays, and can then use .forEach on it,
+        // and destructure the key and value for use in the callback function
         Object.entries(this.quadrantValues).forEach(([key, value]) => {
             const quadrantCountBadge = document.querySelector(`span[data-id="Quadrant-${key}"]`);
             if (quadrantCountBadge) {

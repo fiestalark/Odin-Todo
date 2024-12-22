@@ -5,18 +5,78 @@
 }
 
 :root {
+    /* Layout */
+    --sidebar-width: 300px;
+    --border-radius: 8px;
+    
+    /* Light Theme Colors */
     --primary-pink: #d4a5b0;
     --primary-teal: #40b3a2;
-    --light-gray: #f5f5f5;
-    --border-radius: 8px;
-    --sidebar-width: 300px;
+    --background-primary: #ffffff;
+    --background-secondary: #f5f5f5;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --border-color: #dddddd;
+    --modal-backdrop: rgba(0, 0, 0, 0.5);
+    --modal-background: #ffffff;
+    
+    /* Quadrant Colors - Light */
+    --quadrant-urgent-important: #ffebee;
+    --quadrant-not-urgent-important: #e8f5e9;
+    --quadrant-urgent-not-important: #fff3e0;
+    --quadrant-not-urgent-not-important: #e3f2fd;
+    --quadrant-additional: #f3e5f5;
+    
+    /* Component Colors - Light */
+    --button-background: var(--primary-teal);
+    --button-text: #ffffff;
+    --checkbox-background: #ffffff;
+    --checkbox-border: #dddddd;
+    --badge-background: var(--primary-pink);
+    --badge-text: #ffffff;
+    
+    /* Status Colors */
+    --success: #4CAF50;
+    --error: #f44336;
+    --warning: #ff9800;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    --background-primary: #1a1a1a;
+    --background-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --border-color: #404040;
+    --modal-backdrop: rgba(0, 0, 0, 0.75);
+    --modal-background: #2d2d2d;
+    
+    /* Quadrant Colors - Dark */
+    --quadrant-urgent-important: #4a1f23;
+    --quadrant-not-urgent-important: #1b4a1f;
+    --quadrant-urgent-not-important: #4a3b1f;
+    --quadrant-not-urgent-not-important: #1f3a4a;
+    --quadrant-additional: #3a1f4a;
+    
+    /* Component Colors - Dark */
+    --button-background: #40b3a2;
+    --button-text: #ffffff;
+    --checkbox-background: #2d2d2d;
+    --checkbox-border: #404040;
+    
+    /* Status Colors - Darker variants */
+    --success: #388e3c;
+    --error: #d32f2f;
+    --warning: #f57c00;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--primary-teal);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
     min-height: 100vh;
     margin: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .layout-container {
@@ -26,14 +86,14 @@ body {
 
 .sidebar {
     width: var(--sidebar-width);
-    background-color: var(--primary-teal);
+    background-color: var(--background-secondary);
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     height: 100vh;
     left: 0;
     top: 0;
-    border-right: 3px solid black;
+    border-right: 1px solid var(--border-color);
 }
 
 .sidebar-nav {
@@ -45,13 +105,13 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    color: white;
+    color: var(--text-primary);
     text-decoration: none;
     cursor: pointer;
 }
 
 .nav-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--background-secondary);
 }
 
 .nav-item.active {
@@ -75,8 +135,8 @@ body {
 
 /* Badge styling */
 .badge {
-    background-color: #d4a5b0;
-    color: white;
+    background-color: var(--badge-background);
+    color: var(--badge-text);
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -144,13 +204,17 @@ body {
     filter: invert(15%) sepia(95%) saturate(6932%) hue-rotate(358deg) brightness(95%) contrast(112%);
 }
 
+.modal, .project-modal {
+    background: var(--modal-background);
+    color: var(--text-primary);
+}
+
 /* Project Modal Styling */
 .project-modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: none;
@@ -166,7 +230,7 @@ body {
 
 .project-modal-header {
     background: var(--primary-pink);
-    color: white;
+    color: var(--button-text);
     padding: 15px 20px;
     font-size: 20px;
     position: absolute;
@@ -180,7 +244,7 @@ body {
 }
 
 .project-modal-close {
-    color: white;
+    color: var(--button-text);
     font-size: 24px;
     cursor: pointer;
     background: none;
@@ -208,7 +272,7 @@ body {
 
 .project-form-group label {
     font-weight: 500;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .project-form-group input {
@@ -241,8 +305,8 @@ body {
 }
 
 .project-modal-btn.cancel {
-    background-color: #f5f5f5;
-    color: #666;
+    background-color: var(--background-secondary);
+    color: var(--text-secondary);
 }
 
 .project-modal-btn.submit {
@@ -288,7 +352,7 @@ body {
 
 /* Eisenhower matrix styling */
 .todo-container {
-    background: white;
+    background: var(--background-primary);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: calc(100% - 40px);
@@ -311,41 +375,41 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    background-color: #f5f5f5;
+    background-color: var(--background-secondary);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .urgent-important {
-    background-color: #ffebee;
+    background-color: var(--quadrant-urgent-important);
 }
 
 .not-urgent-important {
-    background-color: #e8f5e9;
+    background-color: var(--quadrant-not-urgent-important);
 }
 
 .urgent-not-important {
-    background-color: #fff3e0;
+    background-color: var(--quadrant-urgent-not-important);
 }
 
 .not-urgent-not-important {
-    background-color: #e3f2fd;
+    background-color: var(--quadrant-not-urgent-not-important);
 }
 
 .fifth-quadrant {
     grid-column: 1 / span 2;
-    background-color: #f3e5f5;
+    background-color: var(--quadrant-additional);
 }
 
 .title {
     font-weight: bold;
     font-size: 1.2em;
     margin-bottom: 10px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .description {
     font-size: 0.9em;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .todo-text {
@@ -354,12 +418,12 @@ body {
 
 .todo-text.completed {
     text-decoration: line-through;
-    color: #888;
+    color: var(--text-secondary);
 }
 
 .delete-btn {
-    background-color: #ff4444;
-    color: white;
+    background-color: var(--error);
+    color: var(--button-text);
     border: none;
     padding: 5px 10px;
     border-radius: 4px;
@@ -371,7 +435,7 @@ li {
     align-items: center;
     padding: 8px;
     margin: 5px 0;
-    background-color: #f9f9f9;
+    background-color: var(--background-secondary);
     border-radius: 4px;
     gap: 25px;
 }
@@ -382,7 +446,7 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
     backdrop-filter: blur(5px);
     display: none;
     z-index: 998;
@@ -393,7 +457,6 @@ li {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: none;
@@ -409,7 +472,7 @@ li {
 
 .modal-header {
     background: var(--primary-pink);
-    color: white;
+    color: var(--button-text);
     padding: 15px 20px;
     font-size: 24px;
     position: absolute;
@@ -445,14 +508,16 @@ li {
 
 label {
     font-weight: 500;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 input[type="text"],
 input[type="date"],
 select {
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 16px;
 }
@@ -490,24 +555,24 @@ input[type="radio"] {
 }
 
 .btn.low {
-    border-color: #4CAF50;
-    color: #4CAF50;
+    border-color: var(--success);
+    color: var(--success);
 }
 
 .btn.high {
-    border-color: #f44336;
-    color: #f44336;
+    border-color: var(--error);
+    color: var(--error);
 }
 
 /* Use the :checked pseudo-class with the adjacent sibling combinator */
 input[type="radio"]:checked + .btn.low {
-    background: #4CAF50;
-    color: white;
+    background: var(--success);
+    color: var(--button-text);
 }
 
 input[type="radio"]:checked + .btn.high {
-    background: #f44336;
-    color: white;
+    background: var(--error);
+    color: var(--button-text);
 }
 
 input[type="radio"] {
@@ -535,4 +600,60 @@ input[type="radio"] {
 .modal.show,
 .modal-backdrop.show {
     display: block;
+}
+
+
+
+/* Add theme toggle styles */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.theme-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-secondary);
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid var(--border-color);
+}
+
+.theme-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--primary-teal);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .theme-toggle-slider:before {
+    transform: translateX(26px);
+    background-color: var(--primary-pink);
 }
